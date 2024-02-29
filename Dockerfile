@@ -1,4 +1,4 @@
-
+# Description: Dockerfile for building subtensor node for localnet with pow-faucet feature.
 ARG BASE_IMAGE=ubuntu:20.04
 
 FROM $BASE_IMAGE as builder
@@ -6,14 +6,6 @@ SHELL ["/bin/bash", "-c"]
 
 # This is being set so that no interactive components are allowed when updating.
 ARG DEBIAN_FRONTEND=noninteractive
-
-LABEL ai.opentensor.image.authors="operations@opentensor.ai" \
-        ai.opentensor.image.vendor="Opentensor Foundation" \
-        ai.opentensor.image.title="opentensor/subtensor" \
-        ai.opentensor.image.description="Opentensor Subtensor Blockchain" \
-        ai.opentensor.image.revision="${VCS_REF}" \
-        ai.opentensor.image.created="${BUILD_DATE}" \
-        ai.opentensor.image.documentation="https://docs.bittensor.com"
 
 # show backtraces
 ENV RUST_BACKTRACE 1
@@ -32,6 +24,7 @@ RUN mkdir -p /subtensor && \
 
 # Scripts
 COPY ./scripts/init.sh /subtensor/scripts/
+COPY ./scripts/localnet.sh /subtensor/scripts/
 
 # Capture dependencies
 COPY Cargo.lock Cargo.toml /subtensor/
@@ -53,8 +46,8 @@ RUN /subtensor/scripts/init.sh
 
 # Cargo build
 WORKDIR /subtensor
-RUN cargo build --release --features runtime-benchmarks --locked
-EXPOSE 30333 9933 9944
+RUN cargo build --release --features pow-faucet --locked
+EXPOSE 30333 30334 30335 9933 9934 9935 9944 9946 9947
 
 
 FROM $BASE_IMAGE AS subtensor
@@ -63,3 +56,4 @@ COPY --from=builder /subtensor/snapshot.json /
 COPY --from=builder /subtensor/raw_spec.json /
 COPY --from=builder /subtensor/raw_testspec.json /
 COPY --from=builder /subtensor/target/release/node-subtensor /usr/local/bin
+COPY --from=builder /subtensor/scripts/localnet.sh /subtensor/scripts/localnet.sh

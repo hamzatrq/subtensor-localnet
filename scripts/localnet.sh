@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : "${CHAIN:=local}"
-: "${BUILD_BINARY:=1}"
+: "${BUILD_BINARY:=0}"
 : "${SPEC_PATH:=specs/}"
 : "${FEATURES:=pow-faucet}"
 
@@ -19,20 +19,24 @@ if [[ $BUILD_BINARY == "1" ]]; then
 fi
 
 echo "*** Building chainspec..."
-./target/release/node-subtensor build-spec --disable-default-bootnode --raw --chain $CHAIN > $FULL_PATH
+node-subtensor build-spec --disable-default-bootnode --raw --chain $CHAIN > $FULL_PATH
 echo "*** Chainspec built and output to file"
 
 echo "*** Purging previous state..."
-./target/release/node-subtensor purge-chain -y --base-path /tmp/bob --chain="$FULL_PATH" >/dev/null 2>&1
-./target/release/node-subtensor purge-chain -y --base-path /tmp/alice --chain="$FULL_PATH" >/dev/null 2>&1
+node-subtensor purge-chain -y --base-path /tmp/blockchain/bob --chain="$FULL_PATH" >/dev/null 2>&1
+node-subtensor purge-chain -y --base-path /tmp/blockchain/alice --chain="$FULL_PATH" >/dev/null 2>&1
 echo "*** Previous chainstate purged"
 
 echo "*** Starting localnet nodes..."
 alice_start=(
-	./target/release/node-subtensor
-	--base-path /tmp/alice
+	node-subtensor
+	--base-path /tmp/blockchain/alice
 	--chain="$FULL_PATH"
 	--alice
+  --rpc-external
+  --rpc-cors all
+  --ws-external
+  --no-mdns
 	--port 30334
 	--ws-port 9946
 	--rpc-port 9934
@@ -43,11 +47,15 @@ alice_start=(
 )
 
 bob_start=(
-	./target/release/node-subtensor
-	--base-path /tmp/bob
+	node-subtensor
+	--base-path /tmp/blockchain/bob
 	--chain="$FULL_PATH"
 	--bob
-	--port 30335
+  --rpc-external
+  --rpc-cors all
+  --ws-external
+  --no-mdns
+  --port 30335
 	--ws-port 9947
 	--rpc-port 9935
 	--validator
