@@ -33,9 +33,8 @@ alice_start=(
 	--base-path /tmp/blockchain/alice
 	--chain="$FULL_PATH"
 	--alice
-  --rpc-external
-  --rpc-cors all
-  --ws-external
+  --unsafe-rpc-external
+  --unsafe-ws-external
   --no-mdns
 	--port 30334
 	--ws-port 9946
@@ -51,9 +50,9 @@ bob_start=(
 	--base-path /tmp/blockchain/bob
 	--chain="$FULL_PATH"
 	--bob
-  --rpc-external
+  --unsafe-rpc-external
+  --unsafe-ws-external
   --rpc-cors all
-  --ws-external
   --no-mdns
   --port 30335
 	--ws-port 9947
