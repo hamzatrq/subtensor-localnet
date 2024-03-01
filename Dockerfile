@@ -57,3 +57,11 @@ COPY --from=builder /subtensor/raw_spec.json /
 COPY --from=builder /subtensor/raw_testspec.json /
 COPY --from=builder /subtensor/target/release/node-subtensor /usr/local/bin
 COPY --from=builder /subtensor/scripts/localnet.sh /subtensor/scripts/localnet.sh
+
+# Copying to a volume so that the data is persisted
+VOLUME ["/subtensor"]
+COPY --from=builder /subtensor/snapshot.json /subtensor/snapshot.json
+COPY --from=builder /subtensor/raw_spec.json /subtensor/raw_spec.json
+COPY --from=builder /subtensor/raw_testspec.json /subtensor/raw_testspec.json
+COPY --from=builder /subtensor/target/release/node-subtensor /subtensor/node-subtensor
+COPY --from=builder /subtensor/scripts/localnet.sh /subtensor/scripts/localnet.sh
