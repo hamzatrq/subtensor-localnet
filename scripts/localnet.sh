@@ -35,7 +35,6 @@ alice_start=(
 	--alice
   --unsafe-rpc-external
   --unsafe-ws-external
-  --no-mdns
 	--port 30334
 	--ws-port 9946
 	--rpc-port 9934
@@ -53,7 +52,6 @@ bob_start=(
   --unsafe-rpc-external
   --unsafe-ws-external
   --rpc-cors all
-  --no-mdns
   --port 30335
 	--ws-port 9947
 	--rpc-port 9935
